@@ -13,15 +13,16 @@ app.use(bodyParser.json())
 // Configuring the database
 const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
+const logger = require('./app/util/logger');
 
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
 mongoose.connect(dbConfig.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    useNewUrlParser: dbConfig.useNewUrlParser,
+    useUnifiedTopology: dbConfig.useUnifiedTopology
 }).then(() => {
-    console.log("Successfully connected to the database");
+    logger.info("Successfully connected to the database");
 }).catch(err => {
     console.log('Could not connect to the database. Exiting now...', err);
     process.exit();
