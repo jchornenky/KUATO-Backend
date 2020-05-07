@@ -20,7 +20,8 @@ mongoose.Promise = global.Promise;
 // Connecting to the database
 mongoose.connect(dbConfig.url, {
     useNewUrlParser: dbConfig.useNewUrlParser,
-    useUnifiedTopology: dbConfig.useUnifiedTopology
+    useUnifiedTopology: dbConfig.useUnifiedTopology,
+    autoIndex: dbConfig.autoIndex
 }).then(() => {
     logger.info("Successfully connected to the database");
 }).catch(err => {
