@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const Schema = require("mongoose");
 
 const ReportUrlSchema = mongoose.Schema({
-    searchQueryId: ObjectId,
+    searchQueryId: Schema.Types.ObjectId,
     sourcePageUrl: String,
     element: String,
     ccid: String,

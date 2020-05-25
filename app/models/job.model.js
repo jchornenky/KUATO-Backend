@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 
 const NotificationSchema = require('./notification.model');
 const SearchQuerySchema = require('./searchQuery.model');
+const Schema = require("mongoose");
 
 const JobSchema = mongoose.Schema({
     name: String,
     dueAt: Date,
-    createdByAuthId: ObjectId,
-    updatedByAuthId: ObjectId,
+    createdByAuthId: Schema.Types.ObjectId,
+    updatedByAuthId: Schema.Types.ObjectId,
     frequency: Number,
     isInstant: {type: Boolean, default: false},
     status: {type: String, default: 'INIT'},

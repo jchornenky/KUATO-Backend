@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const Schema = require("mongoose");
 
 const SearchQuerySchema = mongoose.Schema({
     type: String,
-    createdByAuthId: ObjectId,
-    updatedByAuthId: ObjectId,
+    createdByAuthId: Schema.Types.ObjectId,
+    updatedByAuthId: Schema.Types.ObjectId,
     reportFlag: String,
     useRegex: {type: Boolean, default: false},
     isLinks: {type: Boolean, default: false},

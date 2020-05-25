@@ -18,6 +18,9 @@ module.exports = (permission) => {
                         }
                     }
 
+                    if (!req.data) {
+                        req.data = {};
+                    }
                     req.data.auth = auth;
                     next();
                 })

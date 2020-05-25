@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const ReportUrlSchema = require('./reportUrl.model');
+const Schema = require("mongoose");
 
 const ReportSchema = mongoose.Schema({
-    jobId: ObjectId,
+    jobId: Schema.Types.ObjectId,
     status: {type: String, default: 'INIT'},
     urls: [ReportUrlSchema]
 }, {

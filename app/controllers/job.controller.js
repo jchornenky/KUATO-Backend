@@ -1,4 +1,5 @@
 const Job = require('../models/job.model.js');
+const logger = require('../util/logger');
 
 exports.create = (req, res) => {
     // todo Validate request
@@ -30,7 +31,9 @@ exports.findAll = (req, res) => {
 };
 
 exports.findOne = (req, res) => {
-    Job.findById(req.params.jobId)
+    let jobId = req.params.jobId;
+    logger.info('jobs; findOne #' + jobId);
+    Job.findById(jobId)
         .then(job => {
             if (!job) {
                 return res.status(404).send({

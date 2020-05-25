@@ -35,6 +35,9 @@ app.get('/', (req, res) => {
 });
 
 require('./app/routes/job.routes.js')(app);
+require('./app/routes/admin.routes.js')(app);
+require('./app/routes/auth.routes.js')(app);
+require('./app/routes/report.routes.js')(app);
 
 // listen for requests
 app.listen(3000, () => {

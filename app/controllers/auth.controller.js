@@ -1,5 +1,7 @@
-const Auth = require('../models/auth.model.js');
+const crypto = require('crypto');
 const passwordHash = require('password-hash');
+
+const Auth = require('../models/auth.model.js');
 
 
 exports.create = (req, res) => {
@@ -53,12 +55,14 @@ exports.login = (req, res) => {
 exports.addPermission = (req, res) => {
 
     // todo tuku Validate request
+    let authId = req.params.authId;
+    let permission = req.params.permission
 
-    Auth.findByIdAndUpdate(req.params.authId, {$push: {permissions: permission}})
+    Auth.findByIdAndUpdate(authId, {$push: {permissions: permission}})
         .then(auth => {
             if (!auth) {
                 return res.status(404).send({
-                    message: "Auth not found with id " + req.params.authId
+                    message: "Auth not found with id " + authId
                 });
             }
 
@@ -67,11 +71,11 @@ exports.addPermission = (req, res) => {
         .catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Auth not found with id " + req.params.authId
+                    message: "Auth not found with id " + authId
                 });
             }
             return res.status(500).send({
-                message: "Could not update auth with id " + req.params.authId
+                message: "Could not update auth with id " + authId
             });
         });
 };
@@ -79,12 +83,14 @@ exports.addPermission = (req, res) => {
 exports.deletePermission = (req, res) => {
 
     // todo tuku Validate request
+    let authId = req.params.authId;
+    let permission = req.params.permission
 
-    Auth.findByIdAndUpdate(req.params.authId, {$pull: {permissions: permission}})
+    Auth.findByIdAndUpdate(authId, {$pull: {permissions: permission}})
         .then(auth => {
             if (!auth) {
                 return res.status(404).send({
-                    message: "Auth not found with id " + req.params.authId
+                    message: "Auth not found with id " + authId
                 });
             }
 
@@ -93,11 +99,11 @@ exports.deletePermission = (req, res) => {
         .catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Auth not found with id " + req.params.authId
+                    message: "Auth not found with id " + authId
                 });
             }
             return res.status(500).send({
-                message: "Could not update auth with id " + req.params.authId
+                message: "Could not update auth with id " + authId
             });
         });
 };
