@@ -6,7 +6,7 @@ const AuthSchema = mongoose.Schema({
     mail: String,
     username: String,
     password: String,
-    active: {type: Boolean, default: true},
+    active: { type: Boolean, default: true },
     lastConnectedAt: Date,
     permissions: [String]
 }, {
@@ -15,7 +15,7 @@ const AuthSchema = mongoose.Schema({
 
 AuthSchema.index({
     token: 1,
-    active: 1,
+    active: 1
 });
 
 module.exports = mongoose.model('auth', AuthSchema);

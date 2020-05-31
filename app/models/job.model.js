@@ -2,16 +2,15 @@ const mongoose = require('mongoose');
 
 const NotificationSchema = require('./notification.model');
 const SearchQuerySchema = require('./searchQuery.model');
-const Schema = require("mongoose");
 
 const JobSchema = mongoose.Schema({
     name: String,
     dueAt: Date,
-    createdByAuthId: Schema.Types.ObjectId,
-    updatedByAuthId: Schema.Types.ObjectId,
+    createdByAuthId: mongoose.Schema.Types.ObjectId,
+    updatedByAuthId: mongoose.Schema.Types.ObjectId,
     frequency: Number,
-    isInstant: {type: Boolean, default: false},
-    status: {type: String, default: 'INIT'},
+    isInstant: { type: Boolean, default: false },
+    status: { type: String, default: 'INIT' },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
     urls: [String]
@@ -25,7 +24,7 @@ JobSchema.index({
     updatedAt: 1,
     status: 1,
     createdByAuthId: 1,
-    updatedByAuthId: 1,
+    updatedByAuthId: 1
 });
 
 module.exports = mongoose.model('jobs', JobSchema);

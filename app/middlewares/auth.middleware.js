@@ -26,7 +26,7 @@ module.exports = (permission) => {
                 })
                 .catch(err => {
                     logger.error('auth; err: ' + err);
-                    res.status(403).json({error: new Error('Invalid auth!')});
+                    res.status(403).json({error: 'Invalid auth!'});
                 });
         }
         catch (err) {

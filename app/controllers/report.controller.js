@@ -1,116 +1,119 @@
 const Report = require('../models/report.model');
 const ReportUrl = require('../models/reportUrl.model');
+const defs = require('../constants');
 
 exports.create = (req, res) => {
     // todo tuku Validate request
 
     const report = new Report({
-        jobId: req.params.jobId,
-        status: req.body.status,
+        jobId: req.body.jobId,
+        status: defs.report.status.INIT
     });
 
     report.save()
-        .then(data => {
+        .then((data) => {
             res.send(data);
         })
-        .catch(err => {
+        .catch((err) => {
             res.status(500).send({
-                message: err.message || "Some error occurred while creating the Report."
+                message: err.message || 'Some error occurred while creating the Report.'
             });
         });
 };
 
 exports.findAllByJobId = (req, res) => {
-    let page = (req.query.page || 1) - 1;
-    let limit = req.query.limit || 10;
+    const page = (req.query.page || 1) - 1;
+    const limit = req.query.limit || 10;
 
-    Report.find({jobId: req.params.jobId}, null, {skip: page * 10, limit: limit})
-        .then(jobs => {
+    Report.find({ jobId: req.params.jobId }, null, { skip: page * 10, limit })
+        .then((jobs) => {
             res.send(jobs);
         })
-        .catch(err => {
+        .catch((err) => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving reports."
+                message: err.message || 'Some error occurred while retrieving reports.'
             });
         });
 };
 
 exports.findOne = (req, res) => {
     Report.findById(req.params.reportId)
-        .then(report => {
+        .then((report) => {
             if (!report) {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${req.params.reportId}`
                 });
             }
-            res.send(report);
+
+            return res.send(report);
         })
-        .catch(err => {
+        .catch((err) => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${req.params.reportId}`
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving report with id " + req.params.reportId
+                message: `Error retrieving report with id ${req.params.reportId}`
             });
         });
 };
 
 exports.delete = (req, res) => {
-    Report.findByIdAndRemove(req.params.reportId)
-        .then(report => {
+    const { reportId } = req.params;
+    Report.findByIdAndRemove(reportId)
+        .then((report) => {
             if (!report) {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${reportId}`
                 });
             }
 
-            res.send({message: "Report deleted successfully!"});
+            return res.send({ message: 'Report deleted successfully!' });
         })
-        .catch(err => {
+        .catch((err) => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${reportId}`
                 });
             }
             return res.status(500).send({
-                message: "Could not delete report with id " + req.params.reportId
+                message: `Could not delete report with id ${reportId}`
             });
         });
 };
 
 exports.addUrl = (req, res) => {
-
     // todo tuku Validate request
 
-    let reportUrl = new ReportUrl({
+    const { reportId } = req.params;
+    const reportUrl = new ReportUrl({
         searchQueryId: req.body.searchQueryId,
         sourcePageUrl: req.body.sourcePageUrl,
         element: req.body.element,
         ccid: req.body.ccid,
         reason: req.body.reason,
-        flag: req.body.flag,
+        flag: req.body.flag
     });
 
-    Report.findByIdAndUpdate(req.params.reportId, {$push: {urls: reportUrl}})
-        .then(report => {
+    Report.findByIdAndUpdate(reportId, { $push: { urls: reportUrl } })
+        .then((report) => {
             if (!report) {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${reportId}`
                 });
             }
 
-            res.send({message: "Report deleted successfully!"});
+            return res.status(200).send({ message: 'Report deleted successfully!' });
         })
-        .catch(err => {
+        .catch((err) => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Report not found with id " + req.params.reportId
+                    message: `Report not found with id ${reportId}`
                 });
             }
             return res.status(500).send({
-                message: "Could not update report with id " + req.params.reportId
+                message: `Could not update report with id ${reportId}`
             });
         });
 };
