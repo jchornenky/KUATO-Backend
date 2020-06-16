@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const dbConfig = require('./config/database.config.js');
 const logger = require('./app/util/logger');
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
@@ -39,6 +41,8 @@ mongoose.connect(dbConfig.url, {
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Kuato backend application.' });
 });
+
+app.options('*', cors());
 
 require('./app/routes/job.routes')(app);
 require('./app/routes/admin.routes')(app);
