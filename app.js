@@ -40,10 +40,11 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Kuato backend application.' });
 });
 
-require('./app/routes/job.routes.js')(app);
-require('./app/routes/admin.routes.js')(app);
-require('./app/routes/auth.routes.js')(app);
-require('./app/routes/report.routes.js')(app);
+require('./app/routes/job.routes')(app);
+require('./app/routes/admin.routes')(app);
+require('./app/routes/auth.routes')(app);
+require('./app/routes/report.routes')(app);
+require('./app/routes/status.routes')(app);
 
 // listen for requests
 app.listen(3000, () => {
