@@ -18,4 +18,13 @@ AuthSchema.index({
     active: 1
 });
 
+AuthSchema.methods.exportData = function toExportData() {
+    const {
+        id, name, mail, username, active, lastConnectedAt
+    } = this;
+    return {
+        id, name, mail, username, active, lastConnectedAt
+    };
+};
+
 module.exports = mongoose.model('auth', AuthSchema);

@@ -1,8 +1,8 @@
-module.exports = (app) => {
-    const jobs = require('../controllers/job.controller');
-    const reports = require('../controllers/report.controller');
-    const auth = require('../middlewares/auth.middleware');
+const jobs = require('../controllers/job.controller');
+const reports = require('../controllers/report.controller');
+const auth = require('../middlewares/auth.middleware');
 
+module.exports = (app) => {
     app.post('/jobs', auth('job.create'), jobs.create);
     app.get('/jobs', auth('job'), jobs.findAll);
     app.get('/jobs/:jobId', auth('job'), jobs.findOne);

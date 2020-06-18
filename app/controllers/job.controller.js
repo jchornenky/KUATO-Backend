@@ -5,9 +5,16 @@ const logger = require('../util/logger');
 exports.create = (req, res) => {
     // todo Validate request
 
+    const { auth } = req.data;
+    const urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
+
     const job = new Job({
         name: req.body.name || 'Unnamed Job',
-        isInstant: req.body.isInstant
+        isInstant: req.body.isInstant,
+        notifications: req.body.notifications,
+        searchQueries: req.body.searchQueries,
+        urls,
+        createdByAuthId: auth.id
     });
 
     job.save()
@@ -25,7 +32,8 @@ exports.findAll = (req, res) => {
     Job.find()
         .then((jobs) => {
             res.send(jobs);
-        }).catch((err) => {
+        })
+        .catch((err) => {
             res.status(500).send({
                 message: err.message || 'Some error occurred while retrieving jobs.'
             });
@@ -42,7 +50,7 @@ exports.findOne = (req, res) => {
                     message: `Job not found with id ${req.params.jobId}`
                 });
             }
-            res.send(job);
+            return res.send(job);
         })
         .catch((err) => {
             if (err.kind === 'ObjectId') {
@@ -57,7 +65,22 @@ exports.findOne = (req, res) => {
 };
 
 exports.update = (req, res) => {
+    // todo Validate request
 
+    const { auth } = req.data;
+    const job = req.body;
+    job.updatedByAuthId = auth.id;
+    job.urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
+
+    Job.replaceOne({ _id: job._id }, job)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message: err.message || 'Some error occurred while updating the Job.'
+            });
+        });
 };
 
 exports.delete = (req, res) => {
@@ -68,8 +91,9 @@ exports.delete = (req, res) => {
                     message: `Job not found with id ${req.params.jobId}`
                 });
             }
-            res.send({ message: 'Job deleted successfully!' });
-        }).catch((err) => {
+            return res.send({ message: 'Job deleted successfully!' });
+        })
+        .catch((err) => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
                     message: `Job not found with id ${req.params.jobId}`
