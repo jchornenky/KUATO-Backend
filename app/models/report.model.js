@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 
+const defs = require('../constants');
+
 const ReportUrlSchema = require('./reportUrl.model');
+const ReportResultSchema = require('./reportResult.model');
 
 const ReportSchema = mongoose.Schema({
     jobId: mongoose.Schema.Types.ObjectId,
-    status: { type: String, default: 'INIT' },
+    status: { type: String, default: defs.report.status.INIT },
+    result: ReportResultSchema,
     urls: [ReportUrlSchema]
 }, {
     timestamps: true

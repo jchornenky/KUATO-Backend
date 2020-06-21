@@ -11,7 +11,7 @@ module.exports.searchQuerySeverity = {
     KNOWN_ISSUE: 'KNOWN_ISSUE'
 };
 
-module.exports.statusList = {
+module.exports.status = {
     INIT: 'INIT',
     RUNNING: 'RUNNING',
     RECURRING: 'RECURRING',

@@ -12,7 +12,7 @@ const JobSchema = mongoose.Schema({
     updatedByAuthId: mongoose.Schema.Types.ObjectId,
     frequency: Number,
     isInstant: { type: Boolean, default: false },
-    status: { type: String, default: defs.job.statusList.INIT },
+    status: { type: String, default: defs.job.status.INIT },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
     urls: [String]
