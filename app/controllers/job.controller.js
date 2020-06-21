@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const Job = require('../models/job.model.js');
 const services = require('../services');
 const logger = require('../util/logger');
@@ -29,7 +31,34 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    Job.find()
+    const { status, jobDate } = req.query;
+    const condition = {};
+
+    if (status && status !== '') {
+        condition.status = status;
+    }
+
+    if (jobDate) {
+        switch (jobDate) {
+        case 'TODAY':
+            condition.updatedAt = { $gt: moment().startOf('day') };
+            break;
+        case 'YESTERDAY':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
+            break;
+        case 'LAST_WEEK':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
+            break;
+        case 'LAST_MONTH':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
+            break;
+        case 'OLDER':
+        default:
+            break;
+        }
+    }
+
+    Job.find(condition)
         .then((jobs) => {
             res.send(jobs);
         })

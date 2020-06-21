@@ -10,3 +10,12 @@ module.exports.searchQuerySeverity = {
     MAJOR: 'MAJOR',
     KNOWN_ISSUE: 'KNOWN_ISSUE'
 };
+
+module.exports.statusList = {
+    INIT: 'INIT',
+    RUNNING: 'RUNNING',
+    RECURRING: 'RECURRING',
+    COMPLETED: 'COMPLETED',
+    CANCELED: 'CANCELED',
+    DEACTIVATED: 'DEACTIVATED'
+};

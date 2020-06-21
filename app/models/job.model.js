@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const defs = require('../constants');
+
 const NotificationSchema = require('./notification.model');
 const SearchQuerySchema = require('./searchQuery.model');
 
@@ -10,7 +12,7 @@ const JobSchema = mongoose.Schema({
     updatedByAuthId: mongoose.Schema.Types.ObjectId,
     frequency: Number,
     isInstant: { type: Boolean, default: false },
-    status: { type: String, default: 'INIT' },
+    status: { type: String, default: defs.job.statusList.INIT },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
     urls: [String]
