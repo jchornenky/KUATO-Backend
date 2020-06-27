@@ -2,9 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cron = require('node-cron');
 
 const dbConfig = require('./config/database.config.js');
 const logger = require('./app/util/logger');
+const jobService = require('./app/services/job.service');
 
 // create express app
 const app = express();
@@ -33,7 +35,7 @@ mongoose.connect(dbConfig.url, {
 }).then(() => {
     logger.info('Successfully connected to the database');
 }).catch((err) => {
-    console.log('Could not connect to the database. Exiting now...', err);
+    logger.error('Could not connect to the database. Exiting now...', err);
     process.exit();
 });
 
@@ -50,7 +52,13 @@ require('./app/routes/auth.routes')(app);
 require('./app/routes/report.routes')(app);
 require('./app/routes/status.routes')(app);
 
+// schedule job runs
+cron.schedule('*/5 * * * *', () => {
+    jobService.queueAvailableJobs().then();
+});
+
 // listen for requests
 app.listen(3000, () => {
+    logger.info('Server is listening on port 3000');
     console.log('Server is listening on port 3000');
 });
