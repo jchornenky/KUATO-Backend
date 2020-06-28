@@ -3,6 +3,7 @@ const moment = require('moment');
 const Job = require('../models/job.model.js');
 const services = require('../services');
 const logger = require('../util/logger');
+const defs = require('../constants');
 
 exports.create = (req, res) => {
     // todo Validate request
@@ -38,8 +39,7 @@ exports.findAll = (req, res) => {
         condition.status = status;
     }
 
-    if (jobDate) {
-        switch (jobDate) {
+    switch (jobDate) {
         case 'TODAY':
             condition.updatedAt = { $gt: moment().startOf('day') };
             break;
@@ -55,7 +55,6 @@ exports.findAll = (req, res) => {
         case 'OLDER':
         default:
             break;
-        }
     }
 
     Job.find(condition)
@@ -101,7 +100,7 @@ exports.update = (req, res) => {
     job.updatedByAuthId = auth.id;
     job.urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
 
-    Job.replaceOne({ _id: job._id }, job)
+    Job.replaceOne({ _id: job.id }, job)
         .then((result) => {
             res.send(result);
         })
@@ -109,6 +108,32 @@ exports.update = (req, res) => {
             res.status(500).send({
                 message: err.message || 'Some error occurred while updating the Job.'
             });
+        });
+};
+
+exports.activate = (req, res) => {
+    const { auth } = req.data;
+    const { jobId } = req.params;
+
+    Job.updateOne({ _id: jobId }, { active: true, status: defs.job.status.INIT, updatedByAuthId: auth.id })
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err.message || 'Some error occurred while updating the Job.' });
+        });
+};
+
+exports.deactivate = (req, res) => {
+    const { auth } = req.data;
+    const { jobId } = req.params;
+
+    Job.updateOne({ _id: jobId }, { active: false, status: defs.job.status.DEACTIVATED, updatedByAuthId: auth.id })
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err.message || 'Some error occurred while updating the Job.' });
         });
 };
 
@@ -132,6 +157,11 @@ exports.delete = (req, res) => {
                 message: `Could not delete job with id ${req.params.jobId}`
             });
         });
+};
+
+exports.queueAvailable = (req, res) => {
+    services.job.queueAvailableJobs().then();
+    return res.status(200).send({ message: 'ok' });
 };
 
 exports.addUrl = (req, res) => {

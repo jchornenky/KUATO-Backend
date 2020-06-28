@@ -39,6 +39,9 @@ mongoose.connect(dbConfig.url, {
     process.exit();
 });
 
+mongoose.set('debug', dbConfig.debug);
+mongoose.set('toJSON', { virtuals: true });
+
 // define a simple route
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Kuato backend application.' });

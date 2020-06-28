@@ -7,7 +7,11 @@ module.exports = (app) => {
     app.get('/jobs', auth('job'), jobs.findAll);
     app.get('/jobs/:jobId', auth('job'), jobs.findOne);
     app.put('/jobs/:jobId', auth('job.create'), jobs.update);
+    app.post('/jobs/:jobId/activate', auth('job.create'), jobs.activate);
+    app.post('/jobs/:jobId/deactivate', auth('job.create'), jobs.deactivate);
     app.delete('/jobs/:jobId', auth('job.create'), jobs.delete);
+
+    app.post('/jobs/queueAvailable', auth('job'), jobs.queueAvailable);
 
     app.post('/jobs/:jobId/url', auth('job.create'), jobs.addUrl);
     app.delete('/jobs/:jobId/url/:urlId', auth('job.create'), jobs.deleteUrl);

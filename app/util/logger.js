@@ -1,20 +1,20 @@
 const winston = require('winston');
-const {Loggly} = require('winston-loggly-bulk');
+const { Loggly } = require('winston-loggly-bulk');
 
 const loggerConfig = require('../../config/logger.config');
 
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
-    defaultMeta: {service: 'user-service'}
+    defaultMeta: { service: 'user-service' }
 });
 
 if (loggerConfig.errorLogging) {
-    logger.add(new winston.transports.File({filename: loggerConfig.errorLogging.path, level: 'error'}));
+    logger.add(new winston.transports.File({ filename: loggerConfig.errorLogging.path, level: 'error' }));
 }
 
 if (loggerConfig.combinedLogging) {
-    logger.add(new winston.transports.File({filename: loggerConfig.combinedLogging.path}));
+    logger.add(new winston.transports.File({ filename: loggerConfig.combinedLogging.path }));
 }
 
 if (process.env.NODE_ENV !== 'production') {

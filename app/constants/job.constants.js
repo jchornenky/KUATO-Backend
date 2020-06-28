@@ -1,6 +1,7 @@
 module.exports.searchQueryTypes = {
     TEXT_MATCH: 'TEXT_MATCH',
     ERROR: 'ERROR',
+    REGEX: 'REGEX',
     XPATH: 'XPATH'
 };
 

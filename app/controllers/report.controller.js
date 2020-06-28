@@ -7,7 +7,11 @@ exports.create = (req, res) => {
 
     const report = new Report({
         jobId: req.body.jobId,
-        status: defs.report.status.INIT
+        status: defs.report.status.INIT,
+        result: {
+            errorCount: 0,
+            message: null
+        }
     });
 
     report.save()
@@ -83,20 +87,51 @@ exports.delete = (req, res) => {
         });
 };
 
+exports.updateStatus = (req, res) => {
+    const { reportId, newStatus } = req.params;
+    // todo validate new status
+    Report.findByIdAndUpdate(reportId, { $set: { status: newStatus } })
+        .then((report) => {
+            if (!report) {
+                return res.status(404).send({
+                    message: `Report not found with id ${reportId}`
+                });
+            }
+
+            return res.send(report);
+        })
+        .catch((err) => {
+            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
+                return res.status(404).send({
+                    message: `Report not found with id ${reportId}`
+                });
+            }
+            return res.status(500).send({
+                message: `Could not update report with id ${reportId}`
+            });
+        });
+};
+
 exports.addUrl = (req, res) => {
     // todo tuku Validate request
 
     const { reportId } = req.params;
-    const reportUrl = new ReportUrl({
+    const reportUrl = {
         searchQueryId: req.body.searchQueryId,
         sourcePageUrl: req.body.sourcePageUrl,
+        severity: req.body.severity,
+        status: req.body.status,
         element: req.body.element,
         ccid: req.body.ccid,
         reason: req.body.reason,
         flag: req.body.flag
-    });
+    };
+    const errorCountChange = reportUrl.status === defs.report.urlStatus.ERROR ? 1 : 0;
 
-    Report.findByIdAndUpdate(reportId, { $push: { urls: reportUrl } })
+    Report.findByIdAndUpdate(reportId, {
+        $push: { urls: reportUrl },
+        $inc: { 'result.errorCount': errorCountChange }
+    })
         .then((report) => {
             if (!report) {
                 return res.status(404).send({

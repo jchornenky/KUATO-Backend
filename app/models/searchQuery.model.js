@@ -6,6 +6,7 @@ const SearchQuerySchema = mongoose.Schema({
     query: String,
     reason: String,
     severity: String,
+    value: String,
     createdByAuthId: mongoose.Schema.Types.ObjectId,
     updatedByAuthId: mongoose.Schema.Types.ObjectId,
     reportFlag: String,

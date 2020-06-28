@@ -14,7 +14,7 @@ const JobSchema = mongoose.Schema({
     frequency: String,
     active: { type: Boolean, default: false },
     isInstant: { type: Boolean, default: false },
-    status: { type: String, default: defs.job.status.INIT },
+    status: { type: String, default: defs.job.status.DEACTIVATED },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
     urls: [String]

@@ -112,17 +112,30 @@ module.exports = {
         Job.find({
             active: true,
             frequency: { $exists: true },
-            lastRunAt: { $lt: moment().substract(15, 'minute') }
+            $or: [
+                { lastRunAt: { $lt: moment().subtract(15, 'minute') } },
+                { lastRunAt: { $exists: false } }
+            ]
         })
             .then((jobs) => {
                 for (const job of jobs) {
                     try {
                         if (job.frequency.endsWith('h')) {
-                            const frequency = parseInt(jobs.frequency.replace('h', ''), 10);
+                            const frequency = parseInt(job.frequency.replace('h', ''), 10);
                             const duration = moment.duration(moment(job.lastRunAt).diff(moment()));
                             const hours = duration.asHours();
 
-                            if (hours >= frequency) {
+                            if (!job.lastRunAt || hours >= frequency) {
+                                queueService.sendToJobQueue(job.id).then();
+                                job.lastRunAt = moment();
+                                job.save();
+                            }
+                        }
+                        else if (job.frequency.endsWith('m')) {
+                            const frequency = parseInt(job.frequency.replace('m', ''), 10);
+                            const duration = moment.duration(moment(job.lastRunAt).diff(moment()));
+                            const minutes = duration.asMinutes();
+                            if (!job.lastRunAt || minutes >= frequency) {
                                 queueService.sendToJobQueue(job.id).then();
                                 job.lastRunAt = moment();
                                 job.save();
