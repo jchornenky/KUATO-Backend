@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cron = require('node-cron');
+const fs = require('fs');
 
-const dbConfig = require('./config/database.config.js');
+const dbConfig = require('./config/database.config');
+const folderConfig = require('./config/folder.config');
 const logger = require('./app/util/logger');
 const jobService = require('./app/services/job.service');
 
@@ -59,6 +61,14 @@ require('./app/routes/status.routes')(app);
 cron.schedule('*/5 * * * *', () => {
     jobService.queueAvailableJobs().then();
 });
+
+// create folders if not exists
+if (!fs.existsSync(folderConfig.excel)) {
+    fs.mkdirSync(folderConfig.excel);
+}
+if (!fs.existsSync(folderConfig.pdf)) {
+    fs.mkdirSync(folderConfig.pdf);
+}
 
 // listen for requests
 app.listen(3000, () => {

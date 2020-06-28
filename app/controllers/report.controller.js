@@ -1,6 +1,9 @@
 const Report = require('../models/report.model');
 const ReportUrl = require('../models/reportUrl.model');
+const logger = require('../util/logger');
+
 const defs = require('../constants');
+const services = require('../services');
 
 exports.create = (req, res) => {
     // todo tuku Validate request
@@ -61,6 +64,53 @@ exports.findOne = (req, res) => {
                 message: `Error retrieving report with id ${req.params.reportId}`
             });
         });
+};
+
+exports.exportExcel = (req, res) => {
+    Report.findById(req.params.reportId)
+        .then((report) => {
+            if (!report) {
+                return res.status(404).send({
+                    message: `Report not found with id ${req.params.reportId}`
+                });
+            }
+
+            try {
+                const fullPath = services.excel.exportData(
+                    JSON.parse(JSON.stringify(report.toJSON({ virtuals: false }))).urls, report.jobId
+                );
+
+                if (fullPath) {
+                    return res.download(fullPath);
+                }
+            }
+            catch (e) {
+                logger.error('parse data to excel error', e);
+                return res.status(500).send({
+                    message: `Error retrieving report with id ${req.params.reportId}`
+                });
+            }
+
+            return res.status(500).send({
+                message: `Error retrieving report with id ${req.params.reportId}`
+            });
+        })
+        .catch((err) => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: `Report not found with id ${req.params.reportId}`
+                });
+            }
+            return res.status(500).send({
+                message: `Error retrieving report with id ${req.params.reportId}`
+            });
+        });
+};
+
+exports.exportPdf = (req, res) => {
+    return res.status(500).send({
+        message: `Error retrieving report with id ${req.params.reportId}`
+    });
 };
 
 exports.delete = (req, res) => {

@@ -12,13 +12,25 @@ exports.create = (req, res) => {
     const urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
 
     const job = new Job({
-        name: req.body.name || 'Unnamed Job',
-        isInstant: req.body.isInstant,
+        name: req.body.name || `Unnamed Job ${moment().format()}`,
         notifications: req.body.notifications,
         searchQueries: req.body.searchQueries,
+        frequency: req.body.frequency,
+        dueAt: req.body.dueAt ? moment(req.body.dueAt) : null,
         urls,
         createdByAuthId: auth.id
     });
+
+    // if the job is set to an instance run, save the job as active
+    if (req.body.isInstant) {
+        job.active = true;
+        job.dueAt = moment();
+    }
+
+    // if the job is a run once job set the frequency to 1
+    if (req.body.isRunOnce) {
+        job.frequency = '1';
+    }
 
     job.save()
         .then((data) => {
@@ -99,6 +111,17 @@ exports.update = (req, res) => {
     const job = req.body;
     job.updatedByAuthId = auth.id;
     job.urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
+
+    // if the job is set to an instance run, save the job as active
+    if (req.body.isInstant) {
+        job.active = true;
+        job.dueAt = moment();
+    }
+
+    // if the job is a run once job set the frequency to 1
+    if (req.body.isRunOnce) {
+        job.frequency = '1';
+    }
 
     Job.replaceOne({ _id: job.id }, job)
         .then((result) => {

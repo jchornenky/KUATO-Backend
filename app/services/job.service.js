@@ -112,6 +112,7 @@ module.exports = {
         Job.find({
             active: true,
             frequency: { $exists: true },
+            dueAt: { $gte: moment() },
             $or: [
                 { lastRunAt: { $lt: moment().subtract(15, 'minute') } },
                 { lastRunAt: { $exists: false } }
@@ -140,6 +141,13 @@ module.exports = {
                                 job.lastRunAt = moment();
                                 job.save();
                             }
+                        }
+                        else if (job.frequency === '1') {
+                            // frequency 1 means it is a runOnce job, set the frequency to 0 after sending it to queue
+                            queueService.sendToJobQueue(job.id).then();
+                            job.lastRunAt = moment();
+                            job.frequency = '0';
+                            job.save();
                         }
                     }
                     catch (err) {

@@ -1,9 +1,12 @@
 const Auth = require('../models/auth.model');
 const logger = require('../util/logger');
 
-module.exports = (permission) => (req, res, next) => {
+module.exports = (permission, checkQuery = false) => (req, res, next) => {
     try {
-        const token = req.headers.authorization;
+        let token = req.headers.authorization;
+        if (checkQuery && !token) {
+            token = req.query.auth;
+        }
         Auth.findOne({ token })
             .then((auth) => {
                 if (!auth) {

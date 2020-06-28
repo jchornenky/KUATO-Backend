@@ -13,7 +13,6 @@ const JobSchema = mongoose.Schema({
     updatedByAuthId: mongoose.Schema.Types.ObjectId,
     frequency: String,
     active: { type: Boolean, default: false },
-    isInstant: { type: Boolean, default: false },
     status: { type: String, default: defs.job.status.DEACTIVATED },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
