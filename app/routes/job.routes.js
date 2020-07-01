@@ -11,6 +11,8 @@ module.exports = (app) => {
     app.post('/jobs/:jobId/deactivate', auth('job.create'), jobs.deactivate);
     app.delete('/jobs/:jobId', auth('job.create'), jobs.delete);
 
+    app.put('/jobs/:jobId/status/:newStatus', auth('job.create'), jobs.updateStatus);
+
     app.post('/jobs/queueAvailable', auth('job'), jobs.queueAvailable);
 
     app.post('/jobs/:jobId/url', auth('job.create'), jobs.addUrl);

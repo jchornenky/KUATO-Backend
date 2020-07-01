@@ -1,8 +1,10 @@
 module.exports.searchQueryTypes = {
     TEXT_MATCH: 'TEXT_MATCH',
-    ERROR: 'ERROR',
+    ERROR: 'ERROR', // deprecated
     REGEX: 'REGEX',
-    XPATH: 'XPATH'
+    XPATH: 'XPATH',
+    STATUS_CHECK: 'STATUS_CHECK',
+    URL_CHECK: 'URL_CHECK'
 };
 
 module.exports.searchQuerySeverity = {

@@ -52,21 +52,21 @@ exports.findAll = (req, res) => {
     }
 
     switch (jobDate) {
-        case 'TODAY':
-            condition.updatedAt = { $gt: moment().startOf('day') };
-            break;
-        case 'YESTERDAY':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
-            break;
-        case 'LAST_WEEK':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
-            break;
-        case 'LAST_MONTH':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
-            break;
-        case 'OLDER':
-        default:
-            break;
+    case 'TODAY':
+        condition.updatedAt = { $gt: moment().startOf('day') };
+        break;
+    case 'YESTERDAY':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
+        break;
+    case 'LAST_WEEK':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
+        break;
+    case 'LAST_MONTH':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
+        break;
+    case 'OLDER':
+    default:
+        break;
     }
 
     Job.find(condition)
@@ -229,4 +229,36 @@ exports.deleteSearchQuery = (req, res) => {
     services.job.deleteSearchQueryFromJob(jobId, searchQueryId)
         .then((job) => res.status(200).send(job))
         .catch((reason) => res.status(reason.status).send({ message: reason.message }));
+};
+
+exports.updateStatus = (req, res) => {
+    const { jobId, newStatus } = req.params;
+    // todo validate new status
+
+    // get job details first for further check
+    Job.findById(jobId)
+        .then((job) => {
+            if (!job) {
+                return res.status(404).send({ message: `Job not found with id ${req.params.jobId}` });
+            }
+
+            // if job status is done, check if the job is a recurring one or not, if so update as recurring
+            const finalStatus = (newStatus === defs.job.status.COMPLETED
+                && (job.frequency.indexOf('h') !== -1 || job.frequency.indexOf('m') !== -1))
+                ? defs.job.status.RECURRING : newStatus;
+            return Job.findByIdAndUpdate(jobId, { $set: { status: finalStatus } })
+                .then((updatedJob) => res.send(updatedJob))
+                .catch((err) => {
+                    if (err.kind === 'ObjectId' || err.name === 'NotFound') {
+                        return res.status(404).send({ message: `Job not found with id ${jobId}` });
+                    }
+                    return res.status(500).send({ message: `Could not job report with id ${jobId}` });
+                });
+        })
+        .catch((err) => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({ message: `Job not found with id ${req.params.jobId}` });
+            }
+            return res.status(500).send({ message: `Error retrieving job with id ${req.params.jobId}` });
+        });
 };
