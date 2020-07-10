@@ -56,6 +56,7 @@ require('./app/routes/admin.routes')(app);
 require('./app/routes/auth.routes')(app);
 require('./app/routes/report.routes')(app);
 require('./app/routes/status.routes')(app);
+require('./app/routes/searchQuery.routes')(app);
 
 // schedule job runs
 cron.schedule('*/5 * * * *', () => {
