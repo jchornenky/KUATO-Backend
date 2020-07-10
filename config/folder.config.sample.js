@@ -1,4 +1,5 @@
 module.exports = {
     excel: '/tmp/excel',
-    pdf: '/tmp/pdf'
+    pdf: '/tmp/pdf',
+    templates: '/tmp/templates'
 };

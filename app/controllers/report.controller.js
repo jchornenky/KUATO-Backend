@@ -1,9 +1,14 @@
+const nunjucks = require('nunjucks');
+const pdf = require('html-pdf');
+const moment = require('moment');
+
 const Report = require('../models/report.model');
 const ReportUrl = require('../models/reportUrl.model');
 const logger = require('../util/logger');
 
 const defs = require('../constants');
 const services = require('../services');
+const folderConfig = require('../../config/folder.config');
 
 exports.create = (req, res) => {
     // todo tuku Validate request
@@ -108,9 +113,54 @@ exports.exportExcel = (req, res) => {
 };
 
 exports.exportPdf = (req, res) => {
-    return res.status(500).send({
-        message: `Error retrieving report with id ${req.params.reportId}`
-    });
+    nunjucks.configure(folderConfig.templates, { autoescape: true });
+
+    Report.findById(req.params.reportId)
+        .then((report) => {
+            if (!report) {
+                return res.status(404).send({
+                    message: `Report not found with id ${req.params.reportId}`
+                });
+            }
+
+            try {
+                const htmlData = nunjucks.render('report.template.html.njk', {
+                    urls: JSON.parse(JSON.stringify(report.toJSON({ virtuals: false }))).urls,
+                    reportName: report.jobId
+                });
+
+                const options = {
+                    format: 'Letter',
+                    orientation: "landscape"
+                };
+                const finalFileName = `${folderConfig.pdf}/${moment().format()}_${report.jobId}.pdf`;
+
+                return pdf.create(htmlData, options).toFile(finalFileName, (err, response) => {
+                    if (err) {
+                        return res.status(500).send({
+                            message: `Error retrieving report with id ${req.params.reportId}`
+                        });
+                    }
+                    return res.download(finalFileName);
+                });
+            }
+            catch (e) {
+                logger.error('parse data to excel error', e);
+                return res.status(500).send({
+                    message: `Error retrieving report with id ${req.params.reportId}`
+                });
+            }
+        })
+        .catch((err) => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: `Report not found with id ${req.params.reportId}`
+                });
+            }
+            return res.status(500).send({
+                message: `Error retrieving report with id ${req.params.reportId}`
+            });
+        });
 };
 
 exports.delete = (req, res) => {

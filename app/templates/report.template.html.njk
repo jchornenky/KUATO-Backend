@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report {{reportName}}</title>
+</head>
+<body>
+
+<table style="width: 100%; height: auto; font-size: 10px; font-family: sans-serif, Arial, Helvetica;
+ border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th>Severity</th>
+        <th style="max-width: 150px;">Element Triggered</th>
+        <th>Source Page Url</th>
+        <th>CCID</th>
+        <th>Reason</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for url in urls %}
+    <tr>
+        <td>{{url.severity}}</td>
+        <td>{{url.element}}</td>
+        <td style="max-width: 150px; width: 150px; overflow-x: hidden;">{{url.sourcePageUrl}}</td>
+        <td>{{url.ccid}}</td>
+        <td>{{url.reason}}</td>
+        <td>{{url.status}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
