@@ -135,7 +135,7 @@ module.exports = {
                         }
                         else if (job.frequency.endsWith('m')) {
                             const frequency = parseInt(job.frequency.replace('m', ''), 10);
-                            const duration = moment.duration(moment(job.lastRunAt).diff(moment()));
+                            const duration = moment.duration(moment().diff(moment(job.lastRunAt)));
                             const minutes = duration.asMinutes();
                             if (!job.lastRunAt || minutes >= frequency) {
                                 queueService.sendToJobQueue(job.id).then();
