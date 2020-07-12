@@ -111,12 +111,13 @@ module.exports = {
     queueAvailableJobs: () => new Promise((resolve, reject) => {
         Job.find({
             active: true,
-            frequency: { $exists: true },
-            dueAt: { $lte: moment() },
-            $or: [
-                { lastRunAt: { $lt: moment().subtract(15, 'minute') } },
-                { lastRunAt: { $exists: false } }
-            ]
+            frequency: { $exists: true, $ne: '0' },
+            dueAt: { $lte: moment() }
+            // ,
+            // $or: [
+            //     { lastRunAt: { $lt: moment().subtract(15, 'minute') } },
+            //     { lastRunAt: { $exists: false } }
+            // ]
         })
             .then((jobs) => {
                 for (const job of jobs) {
