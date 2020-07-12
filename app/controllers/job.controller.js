@@ -25,6 +25,7 @@ exports.create = (req, res) => {
     if (req.body.isInstant) {
         job.active = true;
         job.dueAt = moment();
+        job.status = defs.job.status.RUNNING;
     }
 
     // if the job is a run once job set the frequency to 1
@@ -116,6 +117,7 @@ exports.update = (req, res) => {
     if (req.body.isInstant) {
         job.active = true;
         job.dueAt = moment();
+        job.status = defs.job.status.RUNNING;
     }
 
     // if the job is a run once job set the frequency to 1
