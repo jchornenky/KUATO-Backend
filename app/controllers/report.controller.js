@@ -219,6 +219,7 @@ exports.addUrl = (req, res) => {
     const reportUrl = {
         searchQueryId: req.body.searchQueryId,
         sourcePageUrl: req.body.sourcePageUrl,
+        flagUrl: req.body.flagUrl,
         severity: req.body.severity,
         status: req.body.status,
         element: req.body.element,

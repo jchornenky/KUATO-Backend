@@ -4,6 +4,7 @@ const ReportUrlSchema = mongoose.Schema({
     searchQueryId: mongoose.Schema.Types.ObjectId,
     severity: String,
     sourcePageUrl: String,
+    flagUrl: String,
     status: String,
     element: String,
     ccid: String,
