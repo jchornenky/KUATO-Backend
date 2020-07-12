@@ -59,7 +59,7 @@ require('./app/routes/status.routes')(app);
 require('./app/routes/searchQuery.routes')(app);
 
 // schedule job runs
-cron.schedule('*/5 * * * *', () => {
+cron.schedule('* * * * *', () => {
     jobService.queueAvailableJobs().then();
 });
 
