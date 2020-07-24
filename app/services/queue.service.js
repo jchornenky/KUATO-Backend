@@ -1,5 +1,6 @@
 const amqp = require('amqplib/callback_api');
 const mqConfig = require('../../config/mq.config');
+const logger = require('../util/logger');
 
 /**
  *
@@ -32,7 +33,11 @@ module.exports.sendToJobQueue = (jobId) => new Promise((resolve, reject) => {
     this.connect()
         .then((channel) => {
             channel.sendToQueue(mqConfig.queueName, Buffer.from(jobId));
+            logger.info(`job queued #${jobId}`);
             return resolve(true);
         })
-        .catch(reject);
+        .catch((reason) => {
+            logger.error('unable to queue job', reason);
+            return resolve(false);
+        });
 });
