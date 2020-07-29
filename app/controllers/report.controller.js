@@ -3,6 +3,7 @@ const pdf = require('html-pdf');
 const moment = require('moment');
 
 const Report = require('../models/report.model');
+const Job = require('../models/job.model');
 const ReportUrl = require('../models/reportUrl.model');
 const logger = require('../util/logger');
 
@@ -196,6 +197,36 @@ exports.updateStatus = (req, res) => {
                 return res.status(404).send({
                     message: `Report not found with id ${reportId}`
                 });
+            }
+
+            // send notifications if completed
+            if (newStatus === defs.report.status.DONE) {
+                Job.findOne({ _id: report.jobId })
+                    .then((job) => {
+                        if (job.notifications && job.notifications.length > 0) {
+                            try {
+                                const fullPath = services.excel.exportData(
+                                    JSON.parse(JSON.stringify(report.toJSON({ virtuals: false }))).urls, report.jobId
+                                );
+
+                                if (fullPath) {
+                                    for (const notificationSchema of job.notifications) {
+                                        if (notificationSchema.type === defs.job.notificationSchemaType.MAIL) {
+                                            services.mail.send(
+                                                notificationSchema.recipient,
+                                                `report for ${job.name}`,
+                                                `${report.result.errorCount} errors. ${report.result.message}`,
+                                                fullPath
+                                            ).then();
+                                        }
+                                    }
+                                }
+                            }
+                            catch (e) {
+                                logger.error('parse data to excel error', e);
+                            }
+                        }
+                    });
             }
 
             return res.send(report);

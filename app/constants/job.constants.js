@@ -22,3 +22,7 @@ module.exports.status = {
     CANCELED: 'CANCELED',
     DEACTIVATED: 'DEACTIVATED'
 };
+
+module.exports.notificationSchemaType = {
+    MAIL: 'MAIL'
+};

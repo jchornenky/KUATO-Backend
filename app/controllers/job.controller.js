@@ -53,21 +53,21 @@ exports.findAll = (req, res) => {
     }
 
     switch (jobDate) {
-    case 'TODAY':
-        condition.updatedAt = { $gt: moment().startOf('day') };
-        break;
-    case 'YESTERDAY':
-        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
-        break;
-    case 'LAST_WEEK':
-        condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
-        break;
-    case 'LAST_MONTH':
-        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
-        break;
-    case 'OLDER':
-    default:
-        break;
+        case 'TODAY':
+            condition.updatedAt = { $gt: moment().startOf('day') };
+            break;
+        case 'YESTERDAY':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
+            break;
+        case 'LAST_WEEK':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
+            break;
+        case 'LAST_MONTH':
+            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
+            break;
+        case 'OLDER':
+        default:
+            break;
     }
 
     Job.find(condition)
@@ -248,6 +248,7 @@ exports.updateStatus = (req, res) => {
             const finalStatus = (newStatus === defs.job.status.COMPLETED
                 && (job.frequency.indexOf('h') !== -1 || job.frequency.indexOf('m') !== -1))
                 ? defs.job.status.RECURRING : newStatus;
+
             return Job.findByIdAndUpdate(jobId, { $set: { status: finalStatus } })
                 .then((updatedJob) => res.send(updatedJob))
                 .catch((err) => {
