@@ -6,8 +6,6 @@ const logger = require('../util/logger');
 const defs = require('../constants');
 
 exports.create = (req, res) => {
-    // todo Validate request
-
     if (!req.body.searchQueries || req.body.searchQueries.length === 0) {
         return res.status(500).send({
             message: 'Please specify at least one search query'
@@ -113,7 +111,11 @@ exports.findOne = (req, res) => {
 };
 
 exports.update = (req, res) => {
-    // todo Validate request
+    if (!req.body.searchQueries || req.body.searchQueries.length === 0) {
+        return res.status(500).send({
+            message: 'Please specify at least one search query'
+        }).end();
+    }
 
     const { auth } = req.data;
     const job = req.body;
@@ -132,7 +134,7 @@ exports.update = (req, res) => {
         job.frequency = '1';
     }
 
-    Job.replaceOne({ _id: job.id }, job)
+    return Job.replaceOne({ _id: job.id }, job)
         .then((result) => {
             res.send(result);
         })
