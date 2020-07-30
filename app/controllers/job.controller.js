@@ -8,6 +8,12 @@ const defs = require('../constants');
 exports.create = (req, res) => {
     // todo Validate request
 
+    if (!req.body.searchQueries || req.body.searchQueries.length === 0) {
+        return res.status(500).send({
+            message: 'Please specify at least one search query'
+        }).end();
+    }
+
     const { auth } = req.data;
     const urls = req.body.urlsString ? req.body.urlsString.split('\n') : [];
 
@@ -15,8 +21,9 @@ exports.create = (req, res) => {
         name: req.body.name || `Unnamed Job ${moment().format()}`,
         notifications: req.body.notifications,
         searchQueries: req.body.searchQueries,
+        active: req.body.active || true,
         frequency: req.body.frequency,
-        dueAt: req.body.dueAt ? moment(req.body.dueAt) : null,
+        dueAt: req.body.dueAt ? moment(req.body.dueAt) : moment(),
         urls,
         createdByAuthId: auth.id
     });
@@ -29,11 +36,11 @@ exports.create = (req, res) => {
     }
 
     // if the job is a run once job set the frequency to 1
-    if (req.body.isRunOnce) {
+    if (req.body.isRunOnce || !req.body.frequency) {
         job.frequency = '1';
     }
 
-    job.save()
+    return job.save()
         .then((data) => {
             res.send(data);
         })
