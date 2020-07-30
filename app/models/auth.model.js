@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
-const AuthSchema = mongoose.Schema({
+const { Schema } = mongoose;
+
+const AuthSchema = new Schema({
     name: String,
     token: String,
     mail: String,
@@ -18,12 +20,12 @@ AuthSchema.index({
     active: 1
 });
 
-AuthSchema.methods.exportData = function toExportData() {
+AuthSchema.methods.exportData = function exportData() {
     const {
-        id, name, mail, username, active, lastConnectedAt
+        id, name, mail, username, active, lastConnectedAt, token
     } = this;
     return {
-        id, name, mail, username, active, lastConnectedAt
+        id, name, mail, username, active, lastConnectedAt, token
     };
 };
 

@@ -31,18 +31,22 @@ exports.create = (req, res) => {
 };
 
 exports.login = (req, res) => {
-    const password = passwordHash.generate(req.body.password);
+    const { username, password } = req.body;
+    const hashedPassword = passwordHash.generate(password);
 
-    const projection = 'name token mail username permissions';
-    Auth.find({
-        username: req.body.username,
-        password
-    }, projection)
-        .then((auth) => {
-            if (!auth) {
+    const projection = 'name token mail password username permissions';
+    Auth.find({ username }, projection)
+        .then((auths) => {
+            if (!auths || auths.length === 0) {
                 return res.status(403).json({ error: new Error('Invalid auth!') });
             }
-            return res.send(auth);
+
+            const auth = auths[0];
+            if (!passwordHash.verify(password, auth.password)) {
+                return res.status(403).json({ error: new Error('Invalid auth!') });
+            }
+
+            return res.send(auth.exportData());
         })
         .catch((err) => {
             if (err.kind === 'ObjectId') {
