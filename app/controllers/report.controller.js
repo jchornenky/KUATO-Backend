@@ -72,6 +72,25 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.findAll = (req, res) => {
+    Report.find()
+        .sort({ _id: -1 })
+        .limit(20)
+        .then((reports) => {
+            if (!reports || reports.length === 0) {
+                return res.status(404).send({ message: 'No Reports found' });
+            }
+
+            return res.send(reports);
+        })
+        .catch((err) => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({ message: 'No Reports found' });
+            }
+            return res.status(500).send({ message: 'No Reports found' });
+        });
+};
+
 exports.exportExcel = (req, res) => {
     Report.findById(req.params.reportId)
         .then((report) => {
