@@ -73,12 +73,30 @@ exports.findOne = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
+    const { includeJobs } = req.query;
     Report.find()
         .sort({ _id: -1 })
         .limit(20)
         .then((reports) => {
             if (!reports || reports.length === 0) {
                 return res.status(404).send({ message: 'No Reports found' });
+            }
+
+            if (includeJobs === 'true') {
+                const jobIds = reports.map((r) => r.jobId);
+                return services.job.getJobs(jobIds)
+                    .then((jobs) => {
+                        const parsedJobs = {};
+                        jobs.forEach((job) => {
+                            parsedJobs[job.id] = job.toJSON();
+                        });
+                        const reportsData = reports.map((reportData) => {
+                            const report = reportData.toJSON();
+                            report.job = report.jobId in parsedJobs ? parsedJobs[report.jobId] : {};
+                            return report;
+                        });
+                        return res.send(reportsData);
+                    });
             }
 
             return res.send(reports);

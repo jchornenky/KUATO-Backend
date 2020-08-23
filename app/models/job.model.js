@@ -9,6 +9,7 @@ const JobSchema = mongoose.Schema({
     name: String,
     dueAt: Date,
     lastRunAt: Date,
+    nextRunAt: Date,
     createdByAuthId: mongoose.Schema.Types.ObjectId,
     updatedByAuthId: mongoose.Schema.Types.ObjectId,
     frequency: String,

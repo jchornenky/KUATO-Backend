@@ -21,7 +21,7 @@ module.exports = {
                 }
 
                 job.urls.push(url);
-                job.save()
+                return job.save()
                     .then((data) => resolve(data))
                     .catch((err) => reject({
                         status: 500,
@@ -157,5 +157,20 @@ module.exports = {
                 }
             })
             .catch(reject);
+    }),
+    /**
+     * Get multiple jobs.
+     * @param {String[]} jobIds
+     * @returns {Promise<Job[]>}
+     */
+    getJobs: (jobIds) => new Promise((resolve, reject) => {
+        Job.find({ _id: { $in: jobIds } })
+            .then((jobs) => resolve(jobs))
+            .catch((err) => {
+                if (err.kind === 'ObjectId') {
+                    return reject({ status: 404, message: `Jobs not found with ids ${jobIds}` });
+                }
+                return reject({ status: 500, message: `Error finding jobs with id ${jobIds}` });
+            });
     })
 };
