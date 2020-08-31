@@ -25,14 +25,18 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    const { page, limit } = req.query;
+    const { page, limit, query } = req.query;
     const pageOptions = {
         page: parseInt(page, 10) || 0,
         limit: parseInt(limit, 10) || 10
     };
 
     SearchQueryTemplate
-        .find()
+        .find(
+            { $text: { $search: query } },
+            { score: { $meta: 'textScore' } }
+        )
+        .sort({ score: { $meta: 'textScore' } })
         .skip(pageOptions.page * pageOptions.limit)
         .limit(pageOptions.limit)
         .then((searchQueryTemplates) => {

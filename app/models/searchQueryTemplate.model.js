@@ -11,7 +11,7 @@ const SearchQueryTemplateSchema = mongoose.Schema({
 });
 
 SearchQueryTemplateSchema.index({
-    name: 1,
+    name: 'text',
     createdAt: 1,
     createdByAuthId: 1
 });

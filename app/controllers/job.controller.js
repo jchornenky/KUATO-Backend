@@ -58,21 +58,21 @@ exports.findAll = (req, res) => {
     }
 
     switch (jobDate) {
-        case 'TODAY':
-            condition.updatedAt = { $gt: moment().startOf('day') };
-            break;
-        case 'YESTERDAY':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
-            break;
-        case 'LAST_WEEK':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
-            break;
-        case 'LAST_MONTH':
-            condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
-            break;
-        case 'OLDER':
-        default:
-            break;
+    case 'TODAY':
+        condition.updatedAt = { $gt: moment().startOf('day') };
+        break;
+    case 'YESTERDAY':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'day') };
+        break;
+    case 'LAST_WEEK':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(7, 'day') };
+        break;
+    case 'LAST_MONTH':
+        condition.updatedAt = { $gt: moment().startOf('day').subtract(1, 'month') };
+        break;
+    case 'OLDER':
+    default:
+        break;
     }
 
     Job.find(condition)
