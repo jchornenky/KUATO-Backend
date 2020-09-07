@@ -38,7 +38,7 @@ exports.findAllByJobId = (req, res) => {
     const page = (req.query.page || 1) - 1;
     const limit = req.query.limit || 10;
 
-    Report.find({ jobId: req.params.jobId }, null, { skip: page * 10, limit })
+    Report.find({ jobId: req.params.jobId }, null, { skip: page * 10, limit }).sort([['_id', -1]])
         .then((jobs) => {
             res.send(jobs);
         })
