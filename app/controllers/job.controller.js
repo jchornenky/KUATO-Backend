@@ -76,6 +76,8 @@ exports.findAll = (req, res) => {
     }
 
     Job.find(condition)
+        .sort({ _id: -1 })
+        .limit(20)
         .then((jobs) => {
             res.send(jobs);
         })
