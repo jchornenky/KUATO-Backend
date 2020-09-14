@@ -228,7 +228,7 @@ exports.delete = (req, res) => {
 exports.updateStatus = (req, res) => {
     const { reportId, newStatus } = req.params;
     // todo validate new status
-    Report.findByIdAndUpdate(reportId, { $set: { status: newStatus } })
+    return Report.findByIdAndUpdate(reportId, { $set: { status: newStatus } })
         .then((report) => {
             if (!report) {
                 return res.status(404).send({
@@ -236,10 +236,11 @@ exports.updateStatus = (req, res) => {
                 });
             }
 
-            // send notifications if completed
+            // send notifications if completed, change job's last report
             if (newStatus === defs.report.status.DONE) {
                 Job.findOne({ _id: report.jobId })
-                    .then((job) => {
+                    .then((jobData) => {
+                        const job = jobData;
                         if (job.notifications && job.notifications.length > 0) {
                             try {
                                 const fullPath = services.excel.exportData(
@@ -247,7 +248,7 @@ exports.updateStatus = (req, res) => {
                                 );
 
                                 if (fullPath) {
-                                    for (const notificationSchema of job.notifications) {
+                                    job.notifications.forEach((notificationSchema) => {
                                         if (notificationSchema.type === defs.job.notificationSchemaType.MAIL) {
                                             services.mail.send(
                                                 notificationSchema.recipient,
@@ -256,13 +257,19 @@ exports.updateStatus = (req, res) => {
                                                 fullPath
                                             ).then();
                                         }
-                                    }
+                                    });
                                 }
                             }
                             catch (e) {
                                 logger.error('parse data to excel error', e);
                             }
                         }
+
+                        job.lastReport = {
+                            status: newStatus,
+                            errorCount: report.result.errorCount
+                        };
+                        job.save().then();
                     });
             }
 

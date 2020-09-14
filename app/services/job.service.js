@@ -4,6 +4,8 @@ const queueService = require('./queue.service');
 const logger = require('../util/logger');
 
 const Job = require('../models/job.model');
+const AuthSchema = require('../models/auth.model');
+const ReportSchema = require('../models/report.model');
 const SearchQuery = require('../models/searchQuery.model');
 
 module.exports = {
@@ -55,7 +57,7 @@ module.exports = {
      *
      * @param {string} jobId
      * @param {Object} searchQueryData
-     * @param {Auth} auth
+     * @param {AuthSchema} auth
      * @param {string} searchQueryData.name
      * @param {string} searchQueryData.type
      * @param {string} searchQueryData.query

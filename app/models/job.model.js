@@ -4,6 +4,7 @@ const defs = require('../constants');
 
 const NotificationSchema = require('./notification.model');
 const SearchQuerySchema = require('./searchQuery.model');
+const ReportSubSchema = require('./reportSub.model');
 
 const JobSchema = mongoose.Schema({
     name: String,
@@ -17,7 +18,8 @@ const JobSchema = mongoose.Schema({
     status: { type: String, default: defs.job.status.DEACTIVATED },
     notifications: [NotificationSchema],
     searchQueries: [SearchQuerySchema],
-    urls: [String]
+    urls: [String],
+    lastReport: ReportSubSchema
 }, {
     timestamps: true
 });
