@@ -36,7 +36,7 @@ exports.create = (req, res) => {
 
 exports.findAllByJobId = (req, res) => {
     const page = (req.query.page || 1) - 1;
-    const limit = req.query.limit || 10;
+    const limit = req.query.limit || 100;
 
     Report.find({ jobId: req.params.jobId }, null, { skip: page * 10, limit }).sort([['_id', -1]])
         .then((jobs) => {
@@ -76,7 +76,7 @@ exports.findAll = (req, res) => {
     const { includeJobs } = req.query;
     Report.find()
         .sort({ _id: -1 })
-        .limit(20)
+        .limit(100)
         .then((reports) => {
             if (!reports || reports.length === 0) {
                 return res.status(404).send({ message: 'No Reports found' });
