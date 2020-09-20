@@ -24,7 +24,8 @@ module.exports.status = {
 };
 
 module.exports.frequencyOptions = {
-    RUNONCE: 'RUNONCE',
+    NOT_GONNA_RUN: 'NOT_GONNA_RUN',
+    RUN_ONCE: 'RUN_ONCE',
     RECURRING: 'RECURRING'
 };
 

@@ -34,8 +34,11 @@ exports.create = (req, res) => {
     }
 
     // if the job is a run once job set the frequency to 1
-    if (req.body.isRunOnce === defs.job.frequencyOptions.RUNONCE || !req.body.frequency) {
+    if (req.body.isRunOnce === defs.job.frequencyOptions.RUN_ONCE || !req.body.frequency) {
         job.frequency = '1';
+    }
+    else if (req.body.isRunOnce === defs.job.frequencyOptions.NOT_GONNA_RUN) {
+        job.frequency = '0';
     }
 
     return job.save()
