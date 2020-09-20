@@ -27,14 +27,14 @@ exports.create = (req, res) => {
     });
 
     // if the job is set to an instance run, save the job as active
-    if (req.body.isInstant) {
+    if (req.body.isInstant === defs.job.scheduleOptions.RUN_NOW) {
         job.active = true;
         job.dueAt = moment();
         job.status = defs.job.status.RUNNING;
     }
 
     // if the job is a run once job set the frequency to 1
-    if (req.body.isRunOnce || !req.body.frequency) {
+    if (req.body.isRunOnce === defs.job.frequencyOptions.RUNONCE || !req.body.frequency) {
         job.frequency = '1';
     }
 

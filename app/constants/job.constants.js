@@ -23,6 +23,16 @@ module.exports.status = {
     DEACTIVATED: 'DEACTIVATED'
 };
 
+module.exports.frequencyOptions = {
+    RUNONCE: 'RUNONCE',
+    RECURRING: 'RECURRING'
+};
+
+module.exports.scheduleOptions = {
+    RUN_NOW: 'RUN_NOW',
+    NEXT_RUN_DATE: 'NEXT_RUN_DATE'
+};
+
 module.exports.notificationSchemaType = {
     MAIL: 'MAIL'
 };
