@@ -33,12 +33,17 @@ exports.findAll = (req, res) => {
 
     SearchQueryTemplate
         .find(
+            {}
+            /*
             { $text: { $search: query } },
             { score: { $meta: 'textScore' } }
+            */
         )
+        /*
         .sort({ score: { $meta: 'textScore' } })
         .skip(pageOptions.page * pageOptions.limit)
         .limit(pageOptions.limit)
+        */
         .then((searchQueryTemplates) => {
             res.send(searchQueryTemplates);
         })
