@@ -37,3 +37,17 @@ module.exports.scheduleOptions = {
 module.exports.notificationSchemaType = {
     MAIL: 'MAIL'
 };
+
+/**
+ * List of status that job deletion is not allowed
+ */
+module.exports.noDeleteStatusList = [
+    'RUNNING'
+];
+
+/**
+ * List of status that job deactivation is not allowed
+ */
+module.exports.noDeactivateStatusList = [
+    'RUNNING', 'DEACTIVATED'
+];

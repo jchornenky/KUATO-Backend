@@ -163,39 +163,62 @@ exports.activate = (req, res) => {
         });
 };
 
-exports.deactivate = (req, res) => {
+exports.deactivate = async (req, res) => {
     const { auth } = req.data;
     const { jobId } = req.params;
 
-    Job.updateOne({ _id: jobId }, { active: false, status: defs.job.status.DEACTIVATED, updatedByAuthId: auth.id })
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            res.status(500).send({ message: err.message || 'Some error occurred while updating the Job.' });
+    let job = await Job.findById(jobId);
+    if (!job) {
+        return res.status(404).send({ message: `Job not found with id ${jobId}` });
+    }
+
+    // check if the job is running or not, if running do not delete
+    if (defs.job.noDeactivateStatusList.indexOf(job.status) !== -1) {
+        return res.status(400).send({ message: 'Can not deactivate a running or already deactivated job' });
+    }
+
+    try {
+        const result = await Job.updateOne({ _id: jobId }, {
+            active: false,
+            status: defs.job.status.DEACTIVATED,
+            updatedByAuthId: auth.id
         });
+
+        res.send(result);
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message || 'Some error occurred while updating the Job.' });
+    }
 };
 
-exports.delete = (req, res) => {
-    Job.findByIdAndRemove(req.params.jobId)
-        .then((job) => {
-            if (!job) {
-                return res.status(404).send({
-                    message: `Job not found with id ${req.params.jobId}`
-                });
-            }
-            return res.send({ message: 'Job deleted successfully!' });
-        })
-        .catch((err) => {
-            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
-                return res.status(404).send({
-                    message: `Job not found with id ${req.params.jobId}`
-                });
-            }
-            return res.status(500).send({
-                message: `Could not delete job with id ${req.params.jobId}`
-            });
-        });
+exports.delete = async (req, res) => {
+    const { jobId } = req.params;
+
+    let job = await Job.findById(jobId);
+    if (!job) {
+        return res.status(404).send({ message: `Job not found with id ${jobId}` });
+    }
+
+    // check if the job is running or not, if running do not delete
+    if (defs.job.noDeleteStatusList.indexOf(job.status) !== -1) {
+        return res.status(400).send({ message: 'Can not delete a running job' });
+    }
+
+    try {
+        job = await Job.findByIdAndRemove(jobId);
+    }
+    catch (err) {
+        if (err.kind === 'ObjectId' || err.name === 'NotFound') {
+            return res.status(404).send({ message: `Job not found with id ${jobId}` });
+        }
+        return res.status(500).send({ message: `Could not delete job with id ${jobId}` });
+    }
+
+    if (!job) {
+        return res.status(404).send({ message: `Job not found with id ${jobId}` });
+    }
+
+    return res.send({ message: 'Job deleted successfully!' });
 };
 
 exports.queueAvailable = (req, res) => {
