@@ -38,7 +38,7 @@ module.exports = {
 
             /* Add the worksheet to the workbook */
             XLSX.utils.book_append_sheet(wb, ws, wsName);
-            const fullPath = `${folderConfig.excel}/${finalFileName}.xlsb`;
+            const fullPath = `${folderConfig.excel}/${finalFileName}.xlsx`;
             XLSX.writeFile(wb, fullPath);
 
             return fullPath;
